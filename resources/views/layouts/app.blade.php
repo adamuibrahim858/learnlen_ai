@@ -274,7 +274,7 @@
             </div>
         @endif
 
-        @if($errors->any())
+        @if(isset($errors) && $errors->any())
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
                 <div class="d-flex align-items-center mb-1">
                     <i class="bi bi-exclamation-triangle-fill fs-5 me-2 text-danger"></i>

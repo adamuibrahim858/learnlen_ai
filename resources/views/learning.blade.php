@@ -1,6 +1,63 @@
 @extends('layouts.app')
 
-@section('title', ($data['topic_title'] ?? 'Learning Path') . ' - LearnLens AI')
+@section('title', (trim(preg_replace('/\s+/', ' ', $data['topic_title'] ?? 'Learning Path'))) . ' - LearnLens AI')
+
+@section('styles')
+<style>
+    .lesson-formatted-content {
+        color: #334155;
+        font-size: 1rem;
+        line-height: 1.85;
+    }
+
+    .lesson-formatted-content p.lesson-paragraph {
+        margin-bottom: 1.25rem;
+    }
+
+    .topic-header {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .code-window {
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+    }
+
+    .code-window pre code {
+        color: #f8fafc;
+        font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    .diagram-window pre {
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        letter-spacing: 0.5px;
+    }
+
+    .callout-card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .callout-card:hover {
+        transform: translateX(3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .key-point-item {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .key-point-item:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+</style>
+@endsection
 
 @section('content')
 @php
@@ -10,6 +67,8 @@
     $completedCount = count(array_filter($sections, fn($s) => !empty($s['completed'])));
     $progressPercent = $totalSections > 0 ? round(($completedCount / $totalSections) * 100) : 0;
     $allCompleted = ($completedCount === $totalSections && $totalSections > 0);
+    $cleanTopicTitle = trim(preg_replace('/\s+/', ' ', $data['topic_title'] ?? 'Your Learning Path'));
+    $cleanSummary = trim(preg_replace('/\s+/', ' ', $data['summary'] ?? 'Follow the sequential modules below and pass each checkpoint.'));
 @endphp
 
 <div class="container py-4 py-lg-5">
@@ -23,8 +82,8 @@
                         <li class="breadcrumb-item active" aria-current="page">Curriculum</li>
                     </ol>
                 </nav>
-                <h1 class="h2 fw-bold text-dark mb-1" id="topicTitle">{{ $data['topic_title'] ?? 'Your Learning Path' }}</h1>
-                <p class="text-secondary mb-0">{{ $data['summary'] ?? 'Follow the sequential modules below and pass each checkpoint.' }}</p>
+                <h1 class="h2 fw-bold text-dark mb-1" id="topicTitle">{{ $cleanTopicTitle }}</h1>
+                <p class="text-secondary mb-0">{{ $cleanSummary }}</p>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
@@ -86,13 +145,13 @@
             @php
                 $isCompleted = !empty($section['completed']);
                 $isUnlocked = ($index <= $unlockedIndex);
-                $isCurrent = ($index === $unlockedIndex && !$isCompleted);
+                $cleanSecTitle = trim(preg_replace('/\s+/', ' ', $section['title']));
             @endphp
 
             <div class="col-12" id="section-wrapper-{{ $section['id'] }}">
                 <div class="section-card p-4 p-md-5 {{ $isCompleted ? 'completed' : ($isUnlocked ? 'active-unlocked' : 'locked') }}" id="section-card-{{ $section['id'] }}">
                     <!-- Card Top Header -->
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
                         <div class="d-flex align-items-center gap-3">
                             <span class="step-number {{ $isCompleted ? 'completed' : ($isUnlocked ? 'active' : 'locked') }}" id="badge-{{ $section['id'] }}">
                                 @if($isCompleted)
@@ -103,7 +162,7 @@
                             </span>
                             <div>
                                 <h3 class="h4 fw-bold mb-0 text-dark">
-                                    {{ $section['title'] }}
+                                    {{ $cleanSecTitle }}
                                 </h3>
                                 <small class="text-muted">Section {{ $index + 1 }} of {{ $totalSections }}</small>
                             </div>
@@ -130,66 +189,70 @@
                     <!-- Card Body Content -->
                     <div class="section-content-body {{ $isUnlocked ? '' : 'd-none' }}" id="section-body-{{ $section['id'] }}">
                         <!-- 1. Lesson Explanation -->
-                        <div class="mb-4">
-                            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-2">
-                                <i class="bi bi-book text-primary"></i> Lesson Explanation
+                        <div class="mb-5">
+                            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                                <i class="bi bi-book-half text-primary"></i> Detailed Lesson Notes
                             </h5>
-                            <div class="text-secondary" style="line-height: 1.7; font-size: 1rem; white-space: pre-line;">{{ $section['explanation'] }}</div>
+                            <div class="lesson-formatted-content">
+                                {!! \App\Services\LessonFormatter::format($section['explanation']) !!}
+                            </div>
                         </div>
 
                         <!-- 2. Key Takeaways -->
                         @if(!empty($section['key_points']))
-                            <div class="mb-4 p-3 rounded-3 bg-light border">
-                                <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-2">
-                                    <i class="bi bi-check2-circle text-success"></i> Key Points to Remember
+                            <div class="mb-5 p-4 rounded-4" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-check2-circle text-success fs-5"></i> Key Points to Remember
                                 </h6>
-                                <ul class="list-unstyled mb-0">
+                                <div class="row g-2">
                                     @foreach($section['key_points'] as $point)
-                                        <li class="d-flex align-items-start gap-2 mb-2 text-dark small">
-                                            <i class="bi bi-arrow-right-short text-primary fs-5 lh-1"></i>
-                                            <span>{{ $point }}</span>
-                                        </li>
+                                        <div class="col-12 col-md-6">
+                                            <div class="key-point-item d-flex align-items-start gap-2 h-100">
+                                                <i class="bi bi-check-circle-fill text-primary mt-1 flex-shrink-0"></i>
+                                                <span class="small text-dark fw-medium">{{ trim(preg_replace('/\s+/', ' ', $point)) }}</span>
+                                            </div>
+                                        </div>
                                     @endforeach
-                                </ul>
+                                </div>
                             </div>
                         @endif
 
                         <!-- 3. Practical Example -->
                         @if(!empty($section['example']))
-                            <div class="mb-4">
+                            <div class="mb-5">
                                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-2">
-                                    <i class="bi bi-lightbulb text-warning"></i> Illustrative Example
+                                    <i class="bi bi-lightbulb-fill text-warning"></i> Illustrative Example
                                 </h6>
-                                <div class="p-3 rounded-3 border-start border-4 border-warning bg-warning bg-opacity-10 text-dark small" style="line-height: 1.6;">
-                                    {{ $section['example'] }}
+                                <div class="p-3 rounded-4 border-start border-4 border-warning shadow-sm" style="background-color: #fffbeb; line-height: 1.7; font-size: 0.95rem;">
+                                    {!! \App\Services\LessonFormatter::format($section['example']) !!}
                                 </div>
                             </div>
                         @endif
 
                         <!-- 4. Action Area: Take Quiz Button or Review Quiz -->
-                        <div class="pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="pt-4 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <div class="text-muted small">
-                                <i class="bi bi-info-circle me-1"></i> 5 multiple choice questions &bull; 80% passing threshold (4/5)
+                                <i class="bi bi-shield-check text-primary me-1"></i> 5 multiple-choice questions &bull; Requires 80% (4/5) to unlock next section
                             </div>
                             <div>
                                 <button 
                                     type="button" 
                                     class="btn {{ $isCompleted ? 'btn-outline-success' : 'btn-gradient' }} rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 open-quiz-btn"
                                     data-section-id="{{ $section['id'] }}"
-                                    data-section-title="{{ $section['title'] }}"
+                                    data-section-title="{{ $cleanSecTitle }}"
                                 >
-                                    <i class="bi {{ $isCompleted ? 'bi-check-circle' : 'bi-patch-question' }}"></i>
-                                    <span>{{ $isCompleted ? 'Retake Quiz' : 'Take Section Quiz' }}</span>
+                                    <i class="bi {{ $isCompleted ? 'bi-patch-check-fill' : 'bi-patch-question-fill' }}"></i>
+                                    <span>{{ $isCompleted ? 'Retake Section Quiz' : 'Take Section Quiz' }}</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Locked State Message -->
-                    <div class="section-locked-message text-center py-4 {{ $isUnlocked ? 'd-none' : '' }}" id="locked-msg-{{ $section['id'] }}">
-                        <div class="display-6 text-muted mb-2"><i class="bi bi-lock"></i></div>
-                        <h6 class="fw-bold text-secondary mb-1">Section Gated</h6>
-                        <p class="text-muted small mb-0">Score at least 80% on Section {{ $index }} to unlock this lesson.</p>
+                    <div class="section-locked-message text-center py-5 {{ $isUnlocked ? 'd-none' : '' }}" id="locked-msg-{{ $section['id'] }}">
+                        <div class="display-6 text-muted mb-2"><i class="bi bi-lock-fill"></i></div>
+                        <h5 class="fw-bold text-secondary mb-1">Section Gated</h5>
+                        <p class="text-muted small mb-0">Score at least 80% on Section {{ $index }} to unlock this lesson and its quiz.</p>
                     </div>
                 </div>
             </div>
