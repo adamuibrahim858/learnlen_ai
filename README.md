@@ -1,59 +1,202 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LearnLens AI 🎓
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Turn Any Material into Your Personal Learning Journey.**
 
-## About Laravel
+LearnLens AI is an AI-powered personalized learning web application built with **Laravel**, **Bootstrap**, and **Google Gemini / Gemma**. It allows users to submit study materials, research papers, notes, or PDFs, and transforms them into a structured, progressive learning path with interactive lessons and mastery-gated chapter quizzes.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🌟 Key Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Personalized Learning Paths**: Converts raw articles, notes, textbooks, or PDFs into digestible, structured chapters.
+- **Mastery Gating (80% Passing Rule)**: Only Section 1 is unlocked initially. Subsequent sections unlock only after scoring at least **4 out of 5 (80%)** on the current chapter's quiz.
+- **Interactive Quizzes**: 5 multiple-choice questions per module with instant scoring, contextual explanations, and unlimited retries.
+- **Difficulty Adaptation**: Tailor content depth across **Beginner**, **Intermediate**, and **Advanced** tiers.
+- **Flexible Material Input**: Paste text directly, choose from quick presets (*Quantum Computing*, *AI Ethics*, *Personal Finance*), or upload a PDF document.
+- **Secure by Design**: API keys and quiz answers are never exposed to the frontend. All quiz validation is evaluated on the server.
+- **Zero Database Setup**: Uses Laravel session storage to track progress temporarily—no database configuration required.
+- **Dual Engine (Gemini / Gemma + Resilient Fallback)**: Connects to the Gemini API (`gemma-2-9b-it`) when configured, with a built-in text-deconstructing curriculum generator fallback.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Technology Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Component | Technology |
+|---|---|
+| **Backend Framework** | Laravel 11.x (PHP 8.3+) |
+| **Frontend UI** | Laravel Blade, Bootstrap 5.3, Bootstrap Icons |
+| **Interactivity** | Vanilla JavaScript (No heavy frameworks required) |
+| **AI Model** | Google Generative Language API (`gemma-2-9b-it` / `gemini-1.5-flash`) |
+| **Document Parsing** | `smalot/pdfparser` for PDF text extraction |
+| **State Management** | Laravel Encrypted Session Storage |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 📋 System Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Ensure you have the following installed on your machine:
+- **PHP** >= 8.2 (PHP 8.3 recommended)
+- **Composer** (v2.x)
+- **cURL** / OpenSSL extensions enabled in PHP
 
+---
+
+## 🚀 Setup Procedure
+
+Follow these steps to set up and run LearnLens AI locally:
+
+### 1. Clone the Repository
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/adamuibrahim858/learnlen_ai.git
+cd learnlen_ai
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install PHP Dependencies
+```bash
+composer install
+```
 
-## Contributing
+### 3. Configure the Environment
+Copy the `.env.example` file to create your `.env`:
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Generate the Laravel application key:
+```bash
+php artisan key:generate
+```
 
-## Code of Conduct
+### 4. Configure the Gemini API Key
+Open `.env` and add your Google Gemini API key:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemma-2-9b-it
+```
+> **Note**: If `GEMINI_API_KEY` is left blank, LearnLens AI will automatically utilize its intelligent local curriculum engine, guaranteeing 100% functionality even without an external API key!
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Start the Application Server
+Run the built-in development server:
+```bash
+php artisan serve --port=8000
+```
 
-## Security Vulnerabilities
+Open your browser and navigate to:
+**[http://localhost:8000](http://localhost:8000)**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 📖 Step-by-Step User Procedure
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# learnlen_ai
+```mermaid
+graph TD
+    A[1. Landing Page] --> B[Enter Material or Upload PDF]
+    B --> C[Select Difficulty Level]
+    C --> D[Click 'Generate Learning Path']
+    D --> E[2. Learning Page: Section 1 Unlocked]
+    E --> F[Study Lesson, Key Points & Examples]
+    F --> G[Click 'Take Section Quiz']
+    G --> H{Score >= 80%?}
+    H -- No (< 4/5) --> I[Review Explanations & Try Again]
+    I --> G
+    H -- Yes (>= 4/5) --> J[Unlock Next Section & Update Progress]
+    J --> K{All Sections Completed?}
+    K -- No --> E
+    K -- Yes --> L[Course Completion Banner & Milestone]
+```
+
+### Step 1: Submit Learning Material
+1. Navigate to the landing page at `http://localhost:8000`.
+2. Choose one of the following methods to supply your content:
+   - **Paste text**: Insert study notes, lecture transcripts, or articles into the textarea.
+   - **Use a Preset**: Click one of the quick presets (*⚛️ Quantum Computing Basics*, *🤖 AI Ethics*, or *📈 Personal Finance*).
+   - **Upload a PDF**: Click the PDF file input to upload any document (up to 12MB).
+
+### Step 2: Select Difficulty & Generate
+1. Pick your preferred target difficulty:
+   - **Beginner**: Accessible foundational overview.
+   - **Intermediate**: Practical concepts and balanced depth.
+   - **Advanced**: In-depth analysis and technical rigor.
+2. Click **"Generate Learning Path"**. The system processes the content and redirects to your tailored curriculum.
+
+### Step 3: Study the Lesson Modules
+1. Section 1 is unlocked and ready for study.
+2. Review the structured lesson components:
+   - **Lesson Explanation**: Step-by-step breakdown of core concepts.
+   - **Key Points to Remember**: Concise takeaway bullets.
+   - **Illustrative Example**: Practical real-world application.
+
+### Step 4: Complete the Mastery Quiz
+1. Click **"Take Section Quiz"**.
+2. A modal displays 5 multiple-choice questions derived directly from that module.
+3. Select your answers for all 5 questions and click **"Submit Assessment"**.
+
+### Step 5: Review Results and Progression
+- **If you score 4/5 (80%) or 5/5 (100%)**:
+  - The module is marked **Mastered**.
+  - The next module automatically unlocks.
+  - The course progress bar advances.
+- **If you score less than 4/5**:
+  - Detailed feedback identifies correct/incorrect answers with explanations.
+  - Click **"Try Again"** to retake the quiz until mastery is achieved.
+
+### Step 6: Course Completion
+- Once all sections are mastered, a celebratory completion banner appears with the option to reset and start a new learning journey.
+
+---
+
+## 🧪 Testing
+
+LearnLens AI includes automated Feature tests covering the full application flow:
+
+```bash
+php artisan test
+```
+
+### Test Coverage includes:
+- Landing page rendering and hero presence.
+- Material and PDF input validation.
+- AI curriculum generation and session storage.
+- Session persistence and redirection.
+- Locked/unlocked card states.
+- Server-side quiz evaluation and failure gating (< 80%).
+- Success unlocking progression (>= 80%).
+- Session reset functionality.
+
+### Code Style (Laravel Pint)
+To format code according to standard Laravel PSR-12 style rules:
+```bash
+vendor/bin/pint
+```
+
+---
+
+## 📂 Project Architecture
+
+```
+app/
+├── Http/
+│   └── Controllers/
+│       └── LearningController.php    # Page routing, PDF extraction, session state & quiz scoring
+└── Services/
+    └── GeminiService.php             # Gemini/Gemma API integration + local fallback engine
+config/
+└── services.php                      # Gemini service credentials configuration
+resources/
+└── views/
+    ├── layouts/
+    │   └── app.blade.php             # Base layout (Bootstrap 5.3, icons, fonts)
+    ├── landing.blade.php             # Page 1: Hero, inputs, difficulty & presets
+    └── learning.blade.php            # Page 2: Curriculum cards, modal quiz & progress bar
+routes/
+└── web.php                           # Application routes
+tests/
+└── Feature/
+    └── LearnLensTest.php             # Feature test suite (10 tests, 43 assertions)
+```
+
+---
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT License](LICENSE).
